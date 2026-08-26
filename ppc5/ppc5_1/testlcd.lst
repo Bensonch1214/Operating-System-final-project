@@ -1,0 +1,693 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module testlcd
+                                      6 	
+                                      7 	.optsdcc -mmcs51 --model-small
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _timer0_ISR
+                                     12 	.globl __mcs51_genXRAMCLEAR
+                                     13 	.globl __mcs51_genXINIT
+                                     14 	.globl __mcs51_genRAMCLEAR
+                                     15 	.globl __sdcc_gsinit_startup
+                                     16 	.globl _main
+                                     17 	.globl _Consumer
+                                     18 	.globl _Producer2
+                                     19 	.globl _Producer1
+                                     20 	.globl _ButtonToChar
+                                     21 	.globl _AnyButtonPressed
+                                     22 	.globl _LCD_ready
+                                     23 	.globl _LCD_write_char
+                                     24 	.globl _LCD_Init
+                                     25 	.globl _AnyKeyPressed
+                                     26 	.globl _KeyToChar
+                                     27 	.globl _Init_Keypad
+                                     28 	.globl _ThreadCreate
+                                     29 	.globl _CY
+                                     30 	.globl _AC
+                                     31 	.globl _F0
+                                     32 	.globl _RS1
+                                     33 	.globl _RS0
+                                     34 	.globl _OV
+                                     35 	.globl _F1
+                                     36 	.globl _P
+                                     37 	.globl _PS
+                                     38 	.globl _PT1
+                                     39 	.globl _PX1
+                                     40 	.globl _PT0
+                                     41 	.globl _PX0
+                                     42 	.globl _RD
+                                     43 	.globl _WR
+                                     44 	.globl _T1
+                                     45 	.globl _T0
+                                     46 	.globl _INT1
+                                     47 	.globl _INT0
+                                     48 	.globl _TXD
+                                     49 	.globl _RXD
+                                     50 	.globl _P3_7
+                                     51 	.globl _P3_6
+                                     52 	.globl _P3_5
+                                     53 	.globl _P3_4
+                                     54 	.globl _P3_3
+                                     55 	.globl _P3_2
+                                     56 	.globl _P3_1
+                                     57 	.globl _P3_0
+                                     58 	.globl _EA
+                                     59 	.globl _ES
+                                     60 	.globl _ET1
+                                     61 	.globl _EX1
+                                     62 	.globl _ET0
+                                     63 	.globl _EX0
+                                     64 	.globl _P2_7
+                                     65 	.globl _P2_6
+                                     66 	.globl _P2_5
+                                     67 	.globl _P2_4
+                                     68 	.globl _P2_3
+                                     69 	.globl _P2_2
+                                     70 	.globl _P2_1
+                                     71 	.globl _P2_0
+                                     72 	.globl _SM0
+                                     73 	.globl _SM1
+                                     74 	.globl _SM2
+                                     75 	.globl _REN
+                                     76 	.globl _TB8
+                                     77 	.globl _RB8
+                                     78 	.globl _TI
+                                     79 	.globl _RI
+                                     80 	.globl _P1_7
+                                     81 	.globl _P1_6
+                                     82 	.globl _P1_5
+                                     83 	.globl _P1_4
+                                     84 	.globl _P1_3
+                                     85 	.globl _P1_2
+                                     86 	.globl _P1_1
+                                     87 	.globl _P1_0
+                                     88 	.globl _TF1
+                                     89 	.globl _TR1
+                                     90 	.globl _TF0
+                                     91 	.globl _TR0
+                                     92 	.globl _IE1
+                                     93 	.globl _IT1
+                                     94 	.globl _IE0
+                                     95 	.globl _IT0
+                                     96 	.globl _P0_7
+                                     97 	.globl _P0_6
+                                     98 	.globl _P0_5
+                                     99 	.globl _P0_4
+                                    100 	.globl _P0_3
+                                    101 	.globl _P0_2
+                                    102 	.globl _P0_1
+                                    103 	.globl _P0_0
+                                    104 	.globl _B
+                                    105 	.globl _ACC
+                                    106 	.globl _PSW
+                                    107 	.globl _IP
+                                    108 	.globl _P3
+                                    109 	.globl _IE
+                                    110 	.globl _P2
+                                    111 	.globl _SBUF
+                                    112 	.globl _SCON
+                                    113 	.globl _P1
+                                    114 	.globl _TH1
+                                    115 	.globl _TH0
+                                    116 	.globl _TL1
+                                    117 	.globl _TL0
+                                    118 	.globl _TMOD
+                                    119 	.globl _TCON
+                                    120 	.globl _PCON
+                                    121 	.globl _DPH
+                                    122 	.globl _DPL
+                                    123 	.globl _SP
+                                    124 	.globl _P0
+                                    125 	.globl _pop
+                                    126 	.globl _currentKey
+                                    127 	.globl _consumer_ptr
+                                    128 	.globl _producer_ptr
+                                    129 	.globl _full
+                                    130 	.globl _empty
+                                    131 	.globl _mutex
+                                    132 	.globl _currentButton
+                                    133 	.globl _buffer
+                                    134 ;--------------------------------------------------------
+                                    135 ; special function registers
+                                    136 ;--------------------------------------------------------
+                                    137 	.area RSEG    (ABS,DATA)
+      000000                        138 	.org 0x0000
+                           000080   139 _P0	=	0x0080
+                           000081   140 _SP	=	0x0081
+                           000082   141 _DPL	=	0x0082
+                           000083   142 _DPH	=	0x0083
+                           000087   143 _PCON	=	0x0087
+                           000088   144 _TCON	=	0x0088
+                           000089   145 _TMOD	=	0x0089
+                           00008A   146 _TL0	=	0x008a
+                           00008B   147 _TL1	=	0x008b
+                           00008C   148 _TH0	=	0x008c
+                           00008D   149 _TH1	=	0x008d
+                           000090   150 _P1	=	0x0090
+                           000098   151 _SCON	=	0x0098
+                           000099   152 _SBUF	=	0x0099
+                           0000A0   153 _P2	=	0x00a0
+                           0000A8   154 _IE	=	0x00a8
+                           0000B0   155 _P3	=	0x00b0
+                           0000B8   156 _IP	=	0x00b8
+                           0000D0   157 _PSW	=	0x00d0
+                           0000E0   158 _ACC	=	0x00e0
+                           0000F0   159 _B	=	0x00f0
+                                    160 ;--------------------------------------------------------
+                                    161 ; special function bits
+                                    162 ;--------------------------------------------------------
+                                    163 	.area RSEG    (ABS,DATA)
+      000000                        164 	.org 0x0000
+                           000080   165 _P0_0	=	0x0080
+                           000081   166 _P0_1	=	0x0081
+                           000082   167 _P0_2	=	0x0082
+                           000083   168 _P0_3	=	0x0083
+                           000084   169 _P0_4	=	0x0084
+                           000085   170 _P0_5	=	0x0085
+                           000086   171 _P0_6	=	0x0086
+                           000087   172 _P0_7	=	0x0087
+                           000088   173 _IT0	=	0x0088
+                           000089   174 _IE0	=	0x0089
+                           00008A   175 _IT1	=	0x008a
+                           00008B   176 _IE1	=	0x008b
+                           00008C   177 _TR0	=	0x008c
+                           00008D   178 _TF0	=	0x008d
+                           00008E   179 _TR1	=	0x008e
+                           00008F   180 _TF1	=	0x008f
+                           000090   181 _P1_0	=	0x0090
+                           000091   182 _P1_1	=	0x0091
+                           000092   183 _P1_2	=	0x0092
+                           000093   184 _P1_3	=	0x0093
+                           000094   185 _P1_4	=	0x0094
+                           000095   186 _P1_5	=	0x0095
+                           000096   187 _P1_6	=	0x0096
+                           000097   188 _P1_7	=	0x0097
+                           000098   189 _RI	=	0x0098
+                           000099   190 _TI	=	0x0099
+                           00009A   191 _RB8	=	0x009a
+                           00009B   192 _TB8	=	0x009b
+                           00009C   193 _REN	=	0x009c
+                           00009D   194 _SM2	=	0x009d
+                           00009E   195 _SM1	=	0x009e
+                           00009F   196 _SM0	=	0x009f
+                           0000A0   197 _P2_0	=	0x00a0
+                           0000A1   198 _P2_1	=	0x00a1
+                           0000A2   199 _P2_2	=	0x00a2
+                           0000A3   200 _P2_3	=	0x00a3
+                           0000A4   201 _P2_4	=	0x00a4
+                           0000A5   202 _P2_5	=	0x00a5
+                           0000A6   203 _P2_6	=	0x00a6
+                           0000A7   204 _P2_7	=	0x00a7
+                           0000A8   205 _EX0	=	0x00a8
+                           0000A9   206 _ET0	=	0x00a9
+                           0000AA   207 _EX1	=	0x00aa
+                           0000AB   208 _ET1	=	0x00ab
+                           0000AC   209 _ES	=	0x00ac
+                           0000AF   210 _EA	=	0x00af
+                           0000B0   211 _P3_0	=	0x00b0
+                           0000B1   212 _P3_1	=	0x00b1
+                           0000B2   213 _P3_2	=	0x00b2
+                           0000B3   214 _P3_3	=	0x00b3
+                           0000B4   215 _P3_4	=	0x00b4
+                           0000B5   216 _P3_5	=	0x00b5
+                           0000B6   217 _P3_6	=	0x00b6
+                           0000B7   218 _P3_7	=	0x00b7
+                           0000B0   219 _RXD	=	0x00b0
+                           0000B1   220 _TXD	=	0x00b1
+                           0000B2   221 _INT0	=	0x00b2
+                           0000B3   222 _INT1	=	0x00b3
+                           0000B4   223 _T0	=	0x00b4
+                           0000B5   224 _T1	=	0x00b5
+                           0000B6   225 _WR	=	0x00b6
+                           0000B7   226 _RD	=	0x00b7
+                           0000B8   227 _PX0	=	0x00b8
+                           0000B9   228 _PT0	=	0x00b9
+                           0000BA   229 _PX1	=	0x00ba
+                           0000BB   230 _PT1	=	0x00bb
+                           0000BC   231 _PS	=	0x00bc
+                           0000D0   232 _P	=	0x00d0
+                           0000D1   233 _F1	=	0x00d1
+                           0000D2   234 _OV	=	0x00d2
+                           0000D3   235 _RS0	=	0x00d3
+                           0000D4   236 _RS1	=	0x00d4
+                           0000D5   237 _F0	=	0x00d5
+                           0000D6   238 _AC	=	0x00d6
+                           0000D7   239 _CY	=	0x00d7
+                                    240 ;--------------------------------------------------------
+                                    241 ; overlayable register banks
+                                    242 ;--------------------------------------------------------
+                                    243 	.area REG_BANK_0	(REL,OVR,DATA)
+      000000                        244 	.ds 8
+                                    245 ;--------------------------------------------------------
+                                    246 ; internal ram data
+                                    247 ;--------------------------------------------------------
+                                    248 	.area DSEG    (DATA)
+                           000030   249 _buffer	=	0x0030
+                           000033   250 _currentButton	=	0x0033
+                           000034   251 _mutex	=	0x0034
+                           000035   252 _empty	=	0x0035
+                           000036   253 _full	=	0x0036
+                           000037   254 _producer_ptr	=	0x0037
+                           000038   255 _consumer_ptr	=	0x0038
+                           000039   256 _currentKey	=	0x0039
+                           00003A   257 _pop	=	0x003a
+                                    258 ;--------------------------------------------------------
+                                    259 ; overlayable items in internal ram
+                                    260 ;--------------------------------------------------------
+                                    261 ;--------------------------------------------------------
+                                    262 ; Stack segment in internal ram
+                                    263 ;--------------------------------------------------------
+                                    264 	.area SSEG
+      000000                        265 __start__stack:
+      000000                        266 	.ds	1
+                                    267 
+                                    268 ;--------------------------------------------------------
+                                    269 ; indirectly addressable internal ram data
+                                    270 ;--------------------------------------------------------
+                                    271 	.area ISEG    (DATA)
+                                    272 ;--------------------------------------------------------
+                                    273 ; absolute internal ram data
+                                    274 ;--------------------------------------------------------
+                                    275 	.area IABS    (ABS,DATA)
+                                    276 	.area IABS    (ABS,DATA)
+                                    277 ;--------------------------------------------------------
+                                    278 ; bit data
+                                    279 ;--------------------------------------------------------
+                                    280 	.area BSEG    (BIT)
+      000000                        281 _Producer1_sloc0_1_0:
+      000000                        282 	.ds 1
+      000001                        283 _Producer2_sloc0_1_0:
+      000001                        284 	.ds 1
+                                    285 ;--------------------------------------------------------
+                                    286 ; paged external ram data
+                                    287 ;--------------------------------------------------------
+                                    288 	.area PSEG    (PAG,XDATA)
+                                    289 ;--------------------------------------------------------
+                                    290 ; uninitialized external ram data
+                                    291 ;--------------------------------------------------------
+                                    292 	.area XSEG    (XDATA)
+                                    293 ;--------------------------------------------------------
+                                    294 ; absolute external ram data
+                                    295 ;--------------------------------------------------------
+                                    296 	.area XABS    (ABS,XDATA)
+                                    297 ;--------------------------------------------------------
+                                    298 ; initialized external ram data
+                                    299 ;--------------------------------------------------------
+                                    300 	.area XISEG   (XDATA)
+                                    301 	.area HOME    (CODE)
+                                    302 	.area GSINIT0 (CODE)
+                                    303 	.area GSINIT1 (CODE)
+                                    304 	.area GSINIT2 (CODE)
+                                    305 	.area GSINIT3 (CODE)
+                                    306 	.area GSINIT4 (CODE)
+                                    307 	.area GSINIT5 (CODE)
+                                    308 	.area GSINIT  (CODE)
+                                    309 	.area GSFINAL (CODE)
+                                    310 	.area CSEG    (CODE)
+                                    311 ;--------------------------------------------------------
+                                    312 ; interrupt vector
+                                    313 ;--------------------------------------------------------
+                                    314 	.area HOME    (CODE)
+      000000                        315 __interrupt_vect:
+      000000 02r01r0B         [24]  316 	ljmp	__sdcc_gsinit_startup
+      000003 32               [24]  317 	reti
+      000004                        318 	.ds	7
+      00000B 02r01r12         [24]  319 	ljmp	_timer0_ISR
+                                    320 ; restartable atomic support routines
+      00000E                        321 	.ds	2
+      000010                        322 sdcc_atomic_exchange_rollback_start::
+      000010 00               [12]  323 	nop
+      000011 00               [12]  324 	nop
+      000012                        325 sdcc_atomic_exchange_pdata_impl:
+      000012 E2               [24]  326 	movx	a, @r0
+      000013 FB               [12]  327 	mov	r3, a
+      000014 EA               [12]  328 	mov	a, r2
+      000015 F2               [24]  329 	movx	@r0, a
+      000016 80 2C            [24]  330 	sjmp	sdcc_atomic_exchange_exit
+      000018 00               [12]  331 	nop
+      000019 00               [12]  332 	nop
+      00001A                        333 sdcc_atomic_exchange_xdata_impl:
+      00001A E0               [24]  334 	movx	a, @dptr
+      00001B FB               [12]  335 	mov	r3, a
+      00001C EA               [12]  336 	mov	a, r2
+      00001D F0               [24]  337 	movx	@dptr, a
+      00001E 80 24            [24]  338 	sjmp	sdcc_atomic_exchange_exit
+      000020                        339 sdcc_atomic_compare_exchange_idata_impl:
+      000020 E6               [12]  340 	mov	a, @r0
+      000021 B5 02 02         [24]  341 	cjne	a, ar2, .+#5
+      000024 EB               [12]  342 	mov	a, r3
+      000025 F6               [12]  343 	mov	@r0, a
+      000026 22               [24]  344 	ret
+      000027 00               [12]  345 	nop
+      000028                        346 sdcc_atomic_compare_exchange_pdata_impl:
+      000028 E2               [24]  347 	movx	a, @r0
+      000029 B5 02 02         [24]  348 	cjne	a, ar2, .+#5
+      00002C EB               [12]  349 	mov	a, r3
+      00002D F2               [24]  350 	movx	@r0, a
+      00002E 22               [24]  351 	ret
+      00002F 00               [12]  352 	nop
+      000030                        353 sdcc_atomic_compare_exchange_xdata_impl:
+      000030 E0               [24]  354 	movx	a, @dptr
+      000031 B5 02 02         [24]  355 	cjne	a, ar2, .+#5
+      000034 EB               [12]  356 	mov	a, r3
+      000035 F0               [24]  357 	movx	@dptr, a
+      000036 22               [24]  358 	ret
+      000037                        359 sdcc_atomic_exchange_rollback_end::
+                                    360 
+      000037                        361 sdcc_atomic_exchange_gptr_impl::
+      000037 30 F6 E0         [24]  362 	jnb	b.6, sdcc_atomic_exchange_xdata_impl
+      00003A A8 82            [24]  363 	mov	r0, dpl
+      00003C 20 F5 D3         [24]  364 	jb	b.5, sdcc_atomic_exchange_pdata_impl
+      00003F                        365 sdcc_atomic_exchange_idata_impl:
+      00003F EA               [12]  366 	mov	a, r2
+      000040 C6               [12]  367 	xch	a, @r0
+      000041 F5 82            [12]  368 	mov	dpl, a
+      000043 22               [24]  369 	ret
+      000044                        370 sdcc_atomic_exchange_exit:
+      000044 8B 82            [24]  371 	mov	dpl, r3
+      000046 22               [24]  372 	ret
+      000047                        373 sdcc_atomic_compare_exchange_gptr_impl::
+      000047 30 F6 E6         [24]  374 	jnb	b.6, sdcc_atomic_compare_exchange_xdata_impl
+      00004A A8 82            [24]  375 	mov	r0, dpl
+      00004C 20 F5 D9         [24]  376 	jb	b.5, sdcc_atomic_compare_exchange_pdata_impl
+      00004F 80 CF            [24]  377 	sjmp	sdcc_atomic_compare_exchange_idata_impl
+                                    378 ;--------------------------------------------------------
+                                    379 ; global & static initialisations
+                                    380 ;--------------------------------------------------------
+                                    381 	.area HOME    (CODE)
+                                    382 	.area GSINIT  (CODE)
+                                    383 	.area GSFINAL (CODE)
+                                    384 	.area GSINIT  (CODE)
+                                    385 	.globl __sdcc_gsinit_startup
+                                    386 	.globl __sdcc_program_startup
+                                    387 	.globl __start__stack
+                                    388 	.globl __mcs51_genXINIT
+                                    389 	.globl __mcs51_genXRAMCLEAR
+                                    390 	.globl __mcs51_genRAMCLEAR
+                                    391 	.area GSFINAL (CODE)
+      000000 02r00r51         [24]  392 	ljmp	__sdcc_program_startup
+                                    393 ;--------------------------------------------------------
+                                    394 ; Home
+                                    395 ;--------------------------------------------------------
+                                    396 	.area HOME    (CODE)
+                                    397 	.area HOME    (CODE)
+      000051                        398 __sdcc_program_startup:
+      000051 02r00rEA         [24]  399 	ljmp	_main
+                                    400 ;	return from main will return to caller
+                                    401 ;--------------------------------------------------------
+                                    402 ; code
+                                    403 ;--------------------------------------------------------
+                                    404 	.area CSEG    (CODE)
+                                    405 ;------------------------------------------------------------
+                                    406 ;Allocation info for local variables in function 'Producer1'
+                                    407 ;------------------------------------------------------------
+                                    408 ;	testlcd.c:31: void Producer1(void)
+                                    409 ;	-----------------------------------------
+                                    410 ;	 function Producer1
+                                    411 ;	-----------------------------------------
+      000000                        412 _Producer1:
+                           000007   413 	ar7 = 0x07
+                           000006   414 	ar6 = 0x06
+                           000005   415 	ar5 = 0x05
+                           000004   416 	ar4 = 0x04
+                           000003   417 	ar3 = 0x03
+                           000002   418 	ar2 = 0x02
+                           000001   419 	ar1 = 0x01
+                           000000   420 	ar0 = 0x00
+                                    421 ;	testlcd.c:34: while(!AnyButtonPressed());
+      000000                        422 00101$:
+      000000 12r00r00         [24]  423 	lcall	_AnyButtonPressed
+      000003 E5 82            [12]  424 	mov	a, dpl
+      000005 60 F9            [24]  425 	jz	00101$
+                                    426 ;	testlcd.c:37: }
+      000007 D2*00            [12]  427 	setb	_Producer1_sloc0_1_0
+      000009 10 AF 02         [24]  428 	jbc	ea,00145$
+      00000C C2*00            [12]  429 	clr	_Producer1_sloc0_1_0
+      00000E                        430 00145$:
+                                    431 ;	testlcd.c:36: currentButton = ButtonToChar();
+      00000E 12r00r00         [24]  432 	lcall	_ButtonToChar
+      000011 85 82 33         [24]  433 	mov	_currentButton,dpl
+      000014 A2*00            [12]  434 	mov	c,_Producer1_sloc0_1_0
+      000016 92 AF            [24]  435 	mov	ea,c
+                                    436 ;	testlcd.c:38: SemaphoreWaitBody(empty,  L(__COUNTER__));
+      000018                        437 0$:
+      000018 E5 35            [12]  438 	MOV A, _empty 
+      00001A 60 FC            [24]  439 	JZ 0$ 
+      00001C 20 E7 F9         [24]  440 	JB ACC.7, 0$ 
+      00001F 15 35            [12]  441 	dec _empty 
+                                    442 ;	testlcd.c:39: SemaphoreWaitBody(mutex,  L(__COUNTER__));
+      000021                        443 1$:
+      000021 E5 34            [12]  444 	MOV A, _mutex 
+      000023 60 FC            [24]  445 	JZ 1$ 
+      000025 20 E7 F9         [24]  446 	JB ACC.7, 1$ 
+      000028 15 34            [12]  447 	dec _mutex 
+                                    448 ;	testlcd.c:40: buffer[producer_ptr] = currentButton;
+      00002A E5 37            [12]  449 	mov	a,_producer_ptr
+      00002C 24 30            [12]  450 	add	a, #_buffer
+      00002E F8               [12]  451 	mov	r0,a
+      00002F A6 33            [24]  452 	mov	@r0,_currentButton
+                                    453 ;	testlcd.c:41: producer_ptr = (producer_ptr == 2) ? 0 : producer_ptr + 1;
+      000031 74 02            [12]  454 	mov	a,#0x02
+      000033 B5 37 06         [24]  455 	cjne	a,_producer_ptr,00112$
+      000036 7E 00            [12]  456 	mov	r6,#0x00
+      000038 7F 00            [12]  457 	mov	r7,#0x00
+      00003A 80 09            [24]  458 	sjmp	00113$
+      00003C                        459 00112$:
+      00003C AD 37            [24]  460 	mov	r5,_producer_ptr
+      00003E 0D               [12]  461 	inc	r5
+      00003F ED               [12]  462 	mov	a,r5
+      000040 FE               [12]  463 	mov	r6,a
+      000041 33               [12]  464 	rlc	a
+      000042 95 E0            [12]  465 	subb	a,acc
+      000044 FF               [12]  466 	mov	r7,a
+      000045                        467 00113$:
+      000045 8E 37            [24]  468 	mov	_producer_ptr,r6
+                                    469 ;	testlcd.c:42: SemaphoreSignal(mutex);
+      000047 05 34            [12]  470 	INC _mutex 
+                                    471 ;	testlcd.c:43: SemaphoreSignal(full);
+      000049 05 36            [12]  472 	INC _full 
+                                    473 ;	testlcd.c:44: while (AnyButtonPressed());
+      00004B                        474 00104$:
+      00004B 12r00r00         [24]  475 	lcall	_AnyButtonPressed
+      00004E E5 82            [12]  476 	mov	a, dpl
+      000050 60 AE            [24]  477 	jz	00101$
+                                    478 ;	testlcd.c:46: }
+      000052 80 F7            [24]  479 	sjmp	00104$
+                                    480 ;------------------------------------------------------------
+                                    481 ;Allocation info for local variables in function 'Producer2'
+                                    482 ;------------------------------------------------------------
+                                    483 ;	testlcd.c:48: void Producer2(void)
+                                    484 ;	-----------------------------------------
+                                    485 ;	 function Producer2
+                                    486 ;	-----------------------------------------
+      000054                        487 _Producer2:
+                                    488 ;	testlcd.c:51: while (!AnyKeyPressed());
+      000054                        489 00101$:
+      000054 12r00r00         [24]  490 	lcall	_AnyKeyPressed
+      000057 E5 82            [12]  491 	mov	a, dpl
+      000059 60 F9            [24]  492 	jz	00101$
+                                    493 ;	testlcd.c:54: }
+      00005B D2*01            [12]  494 	setb	_Producer2_sloc0_1_0
+      00005D 10 AF 02         [24]  495 	jbc	ea,00145$
+      000060 C2*01            [12]  496 	clr	_Producer2_sloc0_1_0
+      000062                        497 00145$:
+                                    498 ;	testlcd.c:53: currentKey = KeyToChar();
+      000062 12r00r00         [24]  499 	lcall	_KeyToChar
+      000065 85 82 39         [24]  500 	mov	_currentKey,dpl
+      000068 A2*01            [12]  501 	mov	c,_Producer2_sloc0_1_0
+      00006A 92 AF            [24]  502 	mov	ea,c
+                                    503 ;	testlcd.c:55: SemaphoreWaitBody(empty,  L(__COUNTER__));
+      00006C                        504 2$:
+      00006C E5 35            [12]  505 	MOV A, _empty 
+      00006E 60 FC            [24]  506 	JZ 2$ 
+      000070 20 E7 F9         [24]  507 	JB ACC.7, 2$ 
+      000073 15 35            [12]  508 	dec _empty 
+                                    509 ;	testlcd.c:56: SemaphoreWaitBody(mutex,  L(__COUNTER__));
+      000075                        510 3$:
+      000075 E5 34            [12]  511 	MOV A, _mutex 
+      000077 60 FC            [24]  512 	JZ 3$ 
+      000079 20 E7 F9         [24]  513 	JB ACC.7, 3$ 
+      00007C 15 34            [12]  514 	dec _mutex 
+                                    515 ;	testlcd.c:57: buffer[producer_ptr] = currentKey;
+      00007E E5 37            [12]  516 	mov	a,_producer_ptr
+      000080 24 30            [12]  517 	add	a, #_buffer
+      000082 F8               [12]  518 	mov	r0,a
+      000083 A6 39            [24]  519 	mov	@r0,_currentKey
+                                    520 ;	testlcd.c:58: producer_ptr = (producer_ptr == 2) ? 0 : producer_ptr + 1;
+      000085 74 02            [12]  521 	mov	a,#0x02
+      000087 B5 37 06         [24]  522 	cjne	a,_producer_ptr,00112$
+      00008A 7E 00            [12]  523 	mov	r6,#0x00
+      00008C 7F 00            [12]  524 	mov	r7,#0x00
+      00008E 80 09            [24]  525 	sjmp	00113$
+      000090                        526 00112$:
+      000090 AD 37            [24]  527 	mov	r5,_producer_ptr
+      000092 0D               [12]  528 	inc	r5
+      000093 ED               [12]  529 	mov	a,r5
+      000094 FE               [12]  530 	mov	r6,a
+      000095 33               [12]  531 	rlc	a
+      000096 95 E0            [12]  532 	subb	a,acc
+      000098 FF               [12]  533 	mov	r7,a
+      000099                        534 00113$:
+      000099 8E 37            [24]  535 	mov	_producer_ptr,r6
+                                    536 ;	testlcd.c:59: SemaphoreSignal(mutex);
+      00009B 05 34            [12]  537 	INC _mutex 
+                                    538 ;	testlcd.c:60: SemaphoreSignal(full);
+      00009D 05 36            [12]  539 	INC _full 
+                                    540 ;	testlcd.c:61: while (AnyKeyPressed());
+      00009F                        541 00104$:
+      00009F 12r00r00         [24]  542 	lcall	_AnyKeyPressed
+      0000A2 E5 82            [12]  543 	mov	a, dpl
+      0000A4 60 AE            [24]  544 	jz	00101$
+                                    545 ;	testlcd.c:63: }
+      0000A6 80 F7            [24]  546 	sjmp	00104$
+                                    547 ;------------------------------------------------------------
+                                    548 ;Allocation info for local variables in function 'Consumer'
+                                    549 ;------------------------------------------------------------
+                                    550 ;	testlcd.c:70: void Consumer(void)
+                                    551 ;	-----------------------------------------
+                                    552 ;	 function Consumer
+                                    553 ;	-----------------------------------------
+      0000A8                        554 _Consumer:
+                                    555 ;	testlcd.c:72: consumer_ptr = 0;
+      0000A8 75 38 00         [24]  556 	mov	_consumer_ptr,#0x00
+                                    557 ;	testlcd.c:73: while (1){
+      0000AB                        558 00105$:
+                                    559 ;	testlcd.c:74: SemaphoreWaitBody(full,  L(__COUNTER__));
+      0000AB                        560 4$:
+      0000AB E5 36            [12]  561 	MOV A, _full 
+      0000AD 60 FC            [24]  562 	JZ 4$ 
+      0000AF 20 E7 F9         [24]  563 	JB ACC.7, 4$ 
+      0000B2 15 36            [12]  564 	dec _full 
+                                    565 ;	testlcd.c:75: SemaphoreWaitBody(mutex,  L(__COUNTER__));
+      0000B4                        566 5$:
+      0000B4 E5 34            [12]  567 	MOV A, _mutex 
+      0000B6 60 FC            [24]  568 	JZ 5$ 
+      0000B8 20 E7 F9         [24]  569 	JB ACC.7, 5$ 
+      0000BB 15 34            [12]  570 	dec _mutex 
+                                    571 ;	testlcd.c:76: pop = buffer[consumer_ptr];
+      0000BD E5 38            [12]  572 	mov	a,_consumer_ptr
+      0000BF 24 30            [12]  573 	add	a, #_buffer
+      0000C1 F9               [12]  574 	mov	r1,a
+      0000C2 87 3A            [24]  575 	mov	_pop,@r1
+                                    576 ;	testlcd.c:77: SemaphoreSignal(mutex);
+      0000C4 05 34            [12]  577 	INC _mutex 
+                                    578 ;	testlcd.c:78: SemaphoreSignal(empty);
+      0000C6 05 35            [12]  579 	INC _empty 
+                                    580 ;	testlcd.c:79: consumer_ptr = (consumer_ptr == 2) ? 0 : consumer_ptr + 1;
+      0000C8 74 02            [12]  581 	mov	a,#0x02
+      0000CA B5 38 04         [24]  582 	cjne	a,_consumer_ptr,00109$
+      0000CD 7E 00            [12]  583 	mov	r6,#0x00
+      0000CF 80 08            [24]  584 	sjmp	00110$
+      0000D1                        585 00109$:
+      0000D1 AD 38            [24]  586 	mov	r5,_consumer_ptr
+      0000D3 0D               [12]  587 	inc	r5
+      0000D4 ED               [12]  588 	mov	a,r5
+      0000D5 FE               [12]  589 	mov	r6,a
+      0000D6 33               [12]  590 	rlc	a
+      0000D7 95 E0            [12]  591 	subb	a,acc
+      0000D9                        592 00110$:
+      0000D9 8E 38            [24]  593 	mov	_consumer_ptr,r6
+                                    594 ;	testlcd.c:80: LCD_write_char(pop);
+      0000DB 85 3A 82         [24]  595 	mov	dpl, _pop
+      0000DE 12r00r00         [24]  596 	lcall	_LCD_write_char
+                                    597 ;	testlcd.c:81: while (!LCD_ready());
+      0000E1                        598 00101$:
+      0000E1 12r00r00         [24]  599 	lcall	_LCD_ready
+      0000E4 E5 82            [12]  600 	mov	a, dpl
+      0000E6 70 C3            [24]  601 	jnz	00105$
+                                    602 ;	testlcd.c:83: }
+      0000E8 80 F7            [24]  603 	sjmp	00101$
+                                    604 ;------------------------------------------------------------
+                                    605 ;Allocation info for local variables in function 'main'
+                                    606 ;------------------------------------------------------------
+                                    607 ;	testlcd.c:90: void main(void)
+                                    608 ;	-----------------------------------------
+                                    609 ;	 function main
+                                    610 ;	-----------------------------------------
+      0000EA                        611 _main:
+                                    612 ;	testlcd.c:96: producer_ptr = 0;
+      0000EA 75 37 00         [24]  613 	mov	_producer_ptr,#0x00
+                                    614 ;	testlcd.c:97: Init_Keypad();
+      0000ED 12r00r00         [24]  615 	lcall	_Init_Keypad
+                                    616 ;	testlcd.c:98: LCD_Init();
+      0000F0 12r00r00         [24]  617 	lcall	_LCD_Init
+                                    618 ;	testlcd.c:99: SemaphoreCreate(full, 0);
+      0000F3 75 36 00         [24]  619 	mov	_full,#0x00
+                                    620 ;	testlcd.c:100: SemaphoreCreate(mutex, 1);
+      0000F6 75 34 01         [24]  621 	mov	_mutex,#0x01
+                                    622 ;	testlcd.c:101: SemaphoreCreate(empty, 3);
+      0000F9 75 35 03         [24]  623 	mov	_empty,#0x03
+                                    624 ;	testlcd.c:108: ThreadCreate(Consumer);
+      0000FC 90r00rA8         [24]  625 	mov	dptr,#_Consumer
+      0000FF 12r00r00         [24]  626 	lcall	_ThreadCreate
+                                    627 ;	testlcd.c:109: ThreadCreate(Producer2);
+      000102 90r00r54         [24]  628 	mov	dptr,#_Producer2
+      000105 12r00r00         [24]  629 	lcall	_ThreadCreate
+                                    630 ;	testlcd.c:110: Producer1();
+                                    631 ;	testlcd.c:111: }
+      000108 02r00r00         [24]  632 	ljmp	_Producer1
+                                    633 ;------------------------------------------------------------
+                                    634 ;Allocation info for local variables in function '_sdcc_gsinit_startup'
+                                    635 ;------------------------------------------------------------
+                                    636 ;	testlcd.c:113: void _sdcc_gsinit_startup(void)
+                                    637 ;	-----------------------------------------
+                                    638 ;	 function _sdcc_gsinit_startup
+                                    639 ;	-----------------------------------------
+      00010B                        640 __sdcc_gsinit_startup:
+                                    641 ;	testlcd.c:117: __endasm;
+      00010B 02r00r00         [24]  642 	LJMP	_Bootstrap
+                                    643 ;	testlcd.c:118: }
+      00010E 22               [24]  644 	ret
+                                    645 ;------------------------------------------------------------
+                                    646 ;Allocation info for local variables in function '_mcs51_genRAMCLEAR'
+                                    647 ;------------------------------------------------------------
+                                    648 ;	testlcd.c:120: void _mcs51_genRAMCLEAR(void) {}
+                                    649 ;	-----------------------------------------
+                                    650 ;	 function _mcs51_genRAMCLEAR
+                                    651 ;	-----------------------------------------
+      00010F                        652 __mcs51_genRAMCLEAR:
+      00010F 22               [24]  653 	ret
+                                    654 ;------------------------------------------------------------
+                                    655 ;Allocation info for local variables in function '_mcs51_genXINIT'
+                                    656 ;------------------------------------------------------------
+                                    657 ;	testlcd.c:121: void _mcs51_genXINIT(void) {}
+                                    658 ;	-----------------------------------------
+                                    659 ;	 function _mcs51_genXINIT
+                                    660 ;	-----------------------------------------
+      000110                        661 __mcs51_genXINIT:
+      000110 22               [24]  662 	ret
+                                    663 ;------------------------------------------------------------
+                                    664 ;Allocation info for local variables in function '_mcs51_genXRAMCLEAR'
+                                    665 ;------------------------------------------------------------
+                                    666 ;	testlcd.c:122: void _mcs51_genXRAMCLEAR(void) {}
+                                    667 ;	-----------------------------------------
+                                    668 ;	 function _mcs51_genXRAMCLEAR
+                                    669 ;	-----------------------------------------
+      000111                        670 __mcs51_genXRAMCLEAR:
+      000111 22               [24]  671 	ret
+                                    672 ;------------------------------------------------------------
+                                    673 ;Allocation info for local variables in function 'timer0_ISR'
+                                    674 ;------------------------------------------------------------
+                                    675 ;	testlcd.c:123: void timer0_ISR(void) __interrupt(1) {
+                                    676 ;	-----------------------------------------
+                                    677 ;	 function timer0_ISR
+                                    678 ;	-----------------------------------------
+      000112                        679 _timer0_ISR:
+                                    680 ;	testlcd.c:126: __endasm;
+      000112 02r00r00         [24]  681 	ljmp	_myTimer0Handler
+                                    682 ;	testlcd.c:127: }
+      000115 02r00r00         [24]  683 	ljmp	sdcc_atomic_maybe_rollback
+                                    684 ;	eliminated unneeded mov psw,# (no regs used in bank)
+                                    685 ;	eliminated unneeded push/pop not_psw
+                                    686 ;	eliminated unneeded push/pop dpl
+                                    687 ;	eliminated unneeded push/pop dph
+                                    688 ;	eliminated unneeded push/pop b
+                                    689 ;	eliminated unneeded push/pop acc
+                                    690 	.area CSEG    (CODE)
+                                    691 	.area CONST   (CODE)
+                                    692 	.area XINIT   (CODE)
+                                    693 	.area CABS    (ABS,CODE)
