@@ -1,6 +1,6 @@
 # 8051 Operating System Final Project
 
-This repository contains the final project for the Operating Systems course (112070002 張博安). The project focuses on building a simple, custom operating system for the 8051 microcontroller, implemented and simulated using **EdSim51**. The development progresses through five project checkpoints (PPC1 to PPC5), gradually introducing multithreading, preemptive scheduling, synchronization, and finally, a playable mini-game.
+This repository contains the final project for the Operating Systems course. The project focuses on building a simple, custom operating system for the 8051 microcontroller, implemented and simulated using **EdSim51**. The development progresses through five project checkpoints (PPC1 to PPC5), gradually introducing multithreading, preemptive scheduling, synchronization, and finally, a playable mini-game.
 
 ## Tools & Environment
 
